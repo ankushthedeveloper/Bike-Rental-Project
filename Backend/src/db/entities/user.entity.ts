@@ -17,8 +17,14 @@ export class User {
   email: string;
 
   @Column({ length: 100 })
-  password: string;
+  password?: string;
 
   @CreateDateColumn({ type: 'datetime' })
   created_at: Date;
+
+  @Column({ type: 'varchar', nullable: true })
+  authToken: string | null;
+
+  @Column({ type: 'varchar', length: 20, default: 'user' })
+  role: 'user' | 'admin' | 'manager';
 }

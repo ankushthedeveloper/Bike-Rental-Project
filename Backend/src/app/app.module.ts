@@ -10,7 +10,7 @@ import { apiModule } from './api/api.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'cats.db',
+      database: 'bikely.db',
       entities: [Bike, User],
       synchronize: true,
       migrationsRun: true,

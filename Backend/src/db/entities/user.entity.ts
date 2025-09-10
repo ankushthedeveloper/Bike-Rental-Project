@@ -22,9 +22,6 @@ export class User {
   @CreateDateColumn({ type: 'datetime' })
   created_at: Date;
 
-  @Column({ type: 'varchar', nullable: true })
-  authToken: string | null;
-
   @Column({ type: 'varchar', length: 20, default: 'user' })
   role: 'user' | 'admin' | 'manager';
 }

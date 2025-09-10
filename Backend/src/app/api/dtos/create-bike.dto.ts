@@ -5,3 +5,8 @@ export class CreateBikeDto {
   price: number;
   distanceTraveled: number;
 }
+
+export class CreateBikeServiceDto {
+  createBikeDto: CreateBikeDto;
+  images: string[];
+}

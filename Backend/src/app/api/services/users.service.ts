@@ -48,29 +48,31 @@ export class UsersService {
     await this.userRepository.remove(user);
   }
 
-  async signUp(signInDto: SignUpDto): Promise<User> {
+  async signUp(
+    signInDto: SignUpDto,
+  ): Promise<{ user: User; authToken: string }> {
     const existingUser = await this.userRepository.findOne({
       where: { email: signInDto.email },
     });
     if (existingUser) throw new BadRequestException();
     const user = this.userRepository.create(signInDto);
     const AuthToken = await this.authService.generateToken(user);
-    user.authToken = AuthToken.access_token;
+
     this.userRepository.save(user);
     const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return { user: userWithoutPassword, authToken: AuthToken.access_token };
   }
 
-  async logIn(logInDto: LogInDto): Promise<User> {
+  async logIn(logInDto: LogInDto): Promise<{ user: User; authToken: string }> {
     const user = await this.userRepository.findOne({
       where: { email: logInDto.email, password: logInDto.password },
     });
     if (!user) throw new NotFoundException('User not found');
     const AuthToken = await this.authService.generateToken(user);
-    user.authToken = AuthToken.access_token;
+
     this.userRepository.save(user);
     const { password, ...userWithoutPassword } = user;
 
-    return userWithoutPassword;
+    return { user: userWithoutPassword, authToken: AuthToken.access_token };
   }
 }

@@ -1,0 +1,77 @@
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
+import { CreateBookingDto } from '../dtos/create-booking.dto';
+// import { UpdateBookingDto } from '../dtos/update-booking.dto';
+import { BookingService } from '../services/bookings.service';
+import { BikesService } from '../services/bikes.service';
+import { UsersService } from '../services/users.service';
+
+@Controller('booking')
+export class BookingsController {
+  constructor(
+    private readonly bookingService: BookingService,
+    private readonly bikeService: BikesService,
+    private readonly userService: UsersService,
+  ) {}
+
+  @Get()
+  async findAll() {
+    return this.bookingService.findAll();
+  }
+
+  @Get(':id')
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.bookingService.findOne(id);
+  }
+  @Get('user/:userId')
+  async getBookingsByUserId(@Param('userId') userId: string) {
+    const bookings = await this.bookingService.getBookingsByUserId(userId);
+    const updatedBookings = await Promise.all(
+      bookings.map(async (booking) => {
+        const bikeDetails = await this.bikeService.findOne(
+          Number(booking.bikeId),
+        );
+        return {
+          ...booking,
+          bikeDetails,
+        };
+      }),
+    );
+    return updatedBookings;
+  }
+
+  @Post('create')
+  async createBooking(@Body() body: CreateBookingDto) {
+    if (!body.bikeId || !body.userId || !body.startDate || !body.endDate) {
+      throw new BadRequestException('Missing required fields');
+    }
+    const bike = await this.bikeService.findOne(Number(body.bikeId));
+    const user = await this.userService.findOne(Number(body.userId));
+    if (!bike || !user) {
+      throw new BadRequestException('Invalid bike or user ID');
+    }
+    return this.bookingService.create(body);
+  }
+
+  //   @Put(':id')
+  //   async updateBooking(
+  //     @Param('id', ParseIntPipe) id: number,
+  //     @Body() updateBookingDto: UpdateBookingDto,
+  //   ) {
+  //     return this.bookingService.update(id, updateBookingDto);
+  //   }
+
+  @Delete(':id')
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return this.bookingService.remove(id);
+  }
+}

@@ -5,13 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Bike } from 'src/db/entities/bike.entity';
 import { User } from 'src/db/entities/user.entity';
 import { apiModule } from './api/api.module';
+import { Booking } from 'src/db/entities/booking.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'bikely.db',
-      entities: [Bike, User],
+      entities: [Bike, User, Booking],
       synchronize: true,
       migrationsRun: true,
       migrations: ['dist/db/migrations/*.js'],

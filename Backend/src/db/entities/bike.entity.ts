@@ -27,4 +27,7 @@ export class Bike {
 
   @Column()
   distanceTraveled: number;
+
+  @Column('simple-array', { nullable: true })
+  images: string[];
 }

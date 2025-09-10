@@ -1,13 +1,35 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSelector } from "react-redux";
-import { ReduxState } from "@/types/rootState";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUser, setUser } from "@/lib/states/auth.slice";
+import { useRouter } from "next/navigation";
+import { ReduxState } from "@/store";
+
+interface User {
+  name?: string;
+}
 
 const Navbar = () => {
-  const user = useSelector((state: ReduxState) => state.user.user);
-  console.log("User from Redux State:", user);
+  const user = useSelector(
+    (state: ReduxState) => state.user.user as User | null
+  );
+  const dispatch = useDispatch();
+  const [profile, setProfile] = useState(false);
+  const router = useRouter();
+  useEffect(() => {
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      const userObj = userString ? JSON.parse(userString) : null;
+      if (userObj) dispatch(setUser(userObj));
+    }
+  }, [dispatch]);
+  const handleLogout = () => {
+    router.push("/my-bookings");
+    dispatch(clearUser());
+  };
+
   return (
     <nav className="bg-white shadow-md px-6 py-3 flex items-center justify-between">
       <div className="flex items-center gap-2">
@@ -48,7 +70,33 @@ const Navbar = () => {
         </li>
       </ul>
       {user ? (
-        <div className="bg-teal-200 text-white p-4 br-3">Hi {user.name}</div>
+        <div className="flex flex-col gap-5">
+          <div
+            className="bg-teal-800 text-white p-2 rounded"
+            onClick={() => setProfile((prev) => !prev)}
+          >
+            Hi👋,
+            <span className="text-yellow-400 font-bold">
+              {user && user.name}
+            </span>
+          </div>
+          {profile && (
+            <div className=" flex flex-col gap-5 mt-15 bg-teal-900 p-4 rounded shadow-lg absolute h-[150px] ">
+              <button
+                className="bg-white text-black px-4 py-2 rounded-full"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+              <button
+                className="bg-white text-black px-4 py-2 rounded-full"
+                onClick={() => router.push("/my-bookings")}
+              >
+                My Bookings
+              </button>
+            </div>
+          )}
+        </div>
       ) : (
         <div>
           <Link

@@ -1,5 +1,7 @@
 "use client";
 
+import { setUser } from "@/lib/states/auth.slice";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -11,12 +13,11 @@ export default function SignUp() {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  //   const dispatch = useDispatch();
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
+  const dispatch = useDispatch();
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -26,11 +27,13 @@ export default function SignUp() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
+        credentials: "include",
       });
       if (res.ok) {
-        console.log("form data", form);
-        console.log("response dekhlo", res);
+        const { user } = await res.json();
         setMessage("Account created successfully! You can now log in.");
+        dispatch(setUser(user));
+        router.push("/");
         setForm({ name: "", email: "", password: "" });
       } else {
         const data = await res.json();

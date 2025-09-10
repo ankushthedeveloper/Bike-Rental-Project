@@ -1,14 +1,19 @@
 "use client";
 
+import { setUser } from "@/lib/states/auth.slice";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 
 export default function SignUp() {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const dispatch = useDispatch();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -24,12 +29,14 @@ export default function SignUp() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
+        credentials: "include",
       });
       if (res.ok) {
-        const user = await res.json();
-        console.log("Logged in user:", user);
-        setMessage("Logged in successfully!");
+        const data = await res.json();
+        dispatch(setUser(data.user));
         setForm({ email: "", password: "" });
+        router.push("/");
+        router.refresh();
       } else {
         const data = await res.json();
         setMessage(data.message || "Log in failed.");
@@ -80,7 +87,7 @@ export default function SignUp() {
             disabled={loading}
             className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition"
           >
-            {loading ? "Signing Up..." : "Sign Up"}
+            {loading ? "Logging in..." : "Log in"}
           </button>
         </form>
         {message && (

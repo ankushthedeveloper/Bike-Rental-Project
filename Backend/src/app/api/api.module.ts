@@ -8,6 +8,9 @@ import { User } from 'src/db/entities/user.entity';
 import { Bike } from 'src/db/entities/bike.entity';
 import { AuthService } from './services/auth.service';
 import { JwtModule } from '@nestjs/jwt';
+import { BookingsController } from './controllers/bookings.controller';
+import { BookingService } from './services/bookings.service';
+import { Booking } from 'src/db/entities/booking.entity';
 
 @Module({
   imports: [
@@ -15,9 +18,9 @@ import { JwtModule } from '@nestjs/jwt';
       secret: 'your_jwt_secret', // Use env variable in production!
       signOptions: { expiresIn: '1h' },
     }),
-    TypeOrmModule.forFeature([User, Bike]),
+    TypeOrmModule.forFeature([User, Bike, Booking]),
   ],
-  controllers: [UsersController, BikesController],
-  providers: [UsersService, BikesService, AuthService],
+  controllers: [UsersController, BikesController, BookingsController],
+  providers: [UsersService, BikesService, AuthService, BookingService],
 })
 export class apiModule {}

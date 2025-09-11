@@ -1,17 +1,13 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
-import { clearUser, setUser } from "@/lib/states/auth.slice";
-import { useRouter } from "next/navigation";
+import { setUser, clearUser } from "@/lib/states/auth.slice";
 import { ReduxState } from "@/store";
+import { User } from "@/types/user";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 
-interface User {
-  name?: string;
-}
-
-const Navbar = () => {
+const ManagerNavbar = () => {
   const user = useSelector(
     (state: ReduxState) => state.user.user as User | null
   );
@@ -31,9 +27,15 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-md px-6 py-3 flex items-center justify-between fixed w-full z-10 mb-16">
+    <nav className="bg-white shadow-md px-6 py-3 flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <span className="text-2xl font-bold text-blue-600">🚲 Bikely</span>
+        <span className="text-2xl font-bold text-blue-600">
+          {" "}
+          <span className="text-sm w-full p-2 rounded-full bg-teal-700 text-white font-bold">
+            Manager
+          </span>
+          🚲 Bikely
+        </span>
       </div>
       <ul className="flex gap-25 items-center">
         <li>
@@ -110,5 +112,4 @@ const Navbar = () => {
     </nav>
   );
 };
-
-export default Navbar;
+export default ManagerNavbar;

@@ -27,15 +27,15 @@ export class BookingService {
     return this.bookingRepository.save(booking);
   }
 
-  //   async update(
-  //     id: number,
-  //     updateBookingDto: UpdateBookingDto,
-  //   ): Promise<Booking> {
-  //     const booking = await this.bookingRepository.findOne({ where: { id } });
-  //     if (!booking) throw new NotFoundException('Booking not found');
-  //     Object.assign(booking, updateBookingDto);
-  //     return this.bookingRepository.save(booking);
-  //   }
+  async update(
+    id: number,
+    updateBookingDto: CreateBookingDto,
+  ): Promise<Booking> {
+    const booking = await this.bookingRepository.findOne({ where: { id } });
+    if (!booking) throw new NotFoundException('Booking not found');
+    Object.assign(booking, updateBookingDto);
+    return this.bookingRepository.save(booking);
+  }
 
   async remove(id: number): Promise<void> {
     const booking = await this.bookingRepository.findOne({ where: { id } });
@@ -46,5 +46,22 @@ export class BookingService {
   async getBookingsByUserId(userId: string): Promise<Booking[]> {
     const bookings = await this.bookingRepository.find({ where: { userId } });
     return bookings;
+  }
+
+  async getBookingsAssignedToManager(manager: string): Promise<Booking[]> {
+    const bookings = await this.bookingRepository.find({ where: { manager } });
+    return bookings;
+  }
+
+  async assignManagerToBooking(
+    bookingId: number,
+    manager: string,
+  ): Promise<Booking> {
+    const booking = await this.bookingRepository.findOne({
+      where: { id: bookingId },
+    });
+    if (!booking) throw new NotFoundException('Booking not found');
+    booking.manager = manager;
+    return this.bookingRepository.save(booking);
   }
 }

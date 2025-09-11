@@ -25,12 +25,15 @@ export default function SignUp() {
     setMessage("");
     try {
       // Replace with your API endpoint
-      const res = await fetch("http://localhost:3001/users/logIn", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/logIn`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+          credentials: "include",
+        }
+      );
       if (res.ok) {
         const data = await res.json();
         dispatch(setUser(data.user));

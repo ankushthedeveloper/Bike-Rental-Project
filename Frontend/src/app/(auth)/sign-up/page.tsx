@@ -23,12 +23,15 @@ export default function SignUp() {
     setLoading(true);
     setMessage("");
     try {
-      const res = await fetch("http://localhost:3001/users/signUp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/signUp`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+          credentials: "include",
+        }
+      );
       if (res.ok) {
         const { user } = await res.json();
         setMessage("Account created successfully! You can now log in.");

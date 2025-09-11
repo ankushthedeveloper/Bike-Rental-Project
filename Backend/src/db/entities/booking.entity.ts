@@ -16,4 +16,13 @@ export class Booking {
 
   @Column({ type: 'datetime' })
   endDate: Date;
+
+  @Column({ nullable: true })
+  totalPrice: number;
+
+  @Column({ type: 'varchar', length: 20, default: 'pending' })
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+
+  @Column({ nullable: true })
+  manager: string;
 }

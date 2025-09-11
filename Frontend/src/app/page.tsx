@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="font-sans min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex flex-col items-center justify-center p-8 pb-20">
-      <div className="max-w-2xl w-full bg-white rounded-xl shadow-lg p-10 flex flex-col items-center">
+    <div className="font-sans min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex flex-col items-center justify-center p-8 pb-20 ">
+      <div className="max-w-2xl w-full bg-white rounded-xl shadow-lg p-10 flex flex-col items-center mt-16">
         <Image
           src="/bike.png"
           alt="Bikely Hero"

@@ -30,4 +30,13 @@ export class Bike {
 
   @Column('simple-array', { nullable: true })
   images: string[];
+
+  @Column({ type: 'integer', nullable: true, default: 0 })
+  rentPerDay: number;
+
+  @Column({ default: true })
+  isAvailable: boolean;
+
+  @Column({ type: 'integer', nullable: true, default: 0 })
+  noOfBikes: number;
 }

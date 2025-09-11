@@ -34,8 +34,9 @@ export default function BikeDetailPage() {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingMessage, setBookingMessage] = useState("");
   const router = useRouter();
+  const baseURL = process.env.NEXT_PUBLIC_API_URL || "";
   useEffect(() => {
-    fetch(`http://localhost:3001/bikes/${id}`, { credentials: "include" })
+    fetch(`${baseURL}/bikes/${id}`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
         setBike(data);
@@ -62,7 +63,7 @@ export default function BikeDetailPage() {
     setBookingMessage("");
     router.push("/my-bookings");
     try {
-      const res = await fetch("http://localhost:3001/booking/create", {
+      const res = await fetch(`${baseURL}/booking/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

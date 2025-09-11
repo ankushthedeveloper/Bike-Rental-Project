@@ -10,7 +10,6 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { CreateBookingDto } from '../dtos/create-booking.dto';
-// import { UpdateBookingDto } from '../dtos/update-booking.dto';
 import { BookingService } from '../services/bookings.service';
 import { BikesService } from '../services/bikes.service';
 import { UsersService } from '../services/users.service';
@@ -62,13 +61,13 @@ export class BookingsController {
     return this.bookingService.create(body);
   }
 
-  //   @Put(':id')
-  //   async updateBooking(
-  //     @Param('id', ParseIntPipe) id: number,
-  //     @Body() updateBookingDto: UpdateBookingDto,
-  //   ) {
-  //     return this.bookingService.update(id, updateBookingDto);
-  //   }
+  @Put(':id')
+  async updateBooking(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateBookingDto: CreateBookingDto,
+  ) {
+    return this.bookingService.update(id, updateBookingDto);
+  }
 
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {

@@ -32,7 +32,7 @@ export default function MyBookingsPage() {
 
   useEffect(() => {
     if (!user?.id) return;
-    fetch(`http://localhost:3001/booking/user/${user.id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/booking/user/${user.id}`, {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -80,9 +80,14 @@ export default function MyBookingsPage() {
               <p className="text-gray-700 mb-1">
                 To: {new Date(booking.endDate).toLocaleDateString()}
               </p>
-              {/* <p className="text-gray-700 mb-1">
-                Total Price: ₹{booking.totalPrice}
-              </p> */}
+              <p className="text-gray-700 mb-1">
+                Total Price: ₹
+                {booking.bikeDetails?.rentPerDay *
+                  ((new Date(booking.endDate).getTime() -
+                    new Date(booking.startDate).getTime()) /
+                    (1000 * 3600 * 24) +
+                    1)}
+              </p>
               <img
                 src={booking.bikeDetails?.images[0] || ""}
                 alt={`${booking.bikeDetails?.brand} ${booking.bikeDetails?.model}`}

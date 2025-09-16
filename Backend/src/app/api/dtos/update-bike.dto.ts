@@ -1,7 +1,9 @@
 export class UpdateBikeDto {
   brand?: string;
   model?: string;
-  year?: number;
-  price?: number;
-  distanceTraveled?: number;
+  year?: number | '';
+  distanceTraveled?: number | '';
+  rentPerDay?: number | '';
+  noOfBikes?: number | '';
+  images?: string[];
 }

@@ -47,21 +47,4 @@ export class BookingService {
     const bookings = await this.bookingRepository.find({ where: { userId } });
     return bookings;
   }
-
-  async getBookingsAssignedToManager(manager: string): Promise<Booking[]> {
-    const bookings = await this.bookingRepository.find({ where: { manager } });
-    return bookings;
-  }
-
-  async assignManagerToBooking(
-    bookingId: number,
-    manager: string,
-  ): Promise<Booking> {
-    const booking = await this.bookingRepository.findOne({
-      where: { id: bookingId },
-    });
-    if (!booking) throw new NotFoundException('Booking not found');
-    booking.manager = manager;
-    return this.bookingRepository.save(booking);
-  }
 }

@@ -7,9 +7,9 @@ export class AuthService {
   constructor(private readonly jwtService: JwtService) {}
 
   async generateToken(user: User) {
-    const payload = { userId: user.id, email: user.email };
+    const payload = { userId: user.id, email: user.email, role: user.role };
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: '1d' }),
     };
   }
 }

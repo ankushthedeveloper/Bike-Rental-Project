@@ -32,6 +32,7 @@ export class BikesService {
     const bike = await this.bikeRepository.findOne({ where: { id } });
     if (!bike) throw new NotFoundException('Bike not found');
     Object.assign(bike, updateBikeDto);
+    console.log(updateBikeDto);
     return this.bikeRepository.save(bike);
   }
 

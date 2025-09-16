@@ -21,7 +21,12 @@ export class UsersService {
   ) {}
 
   async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+    const users = await this.userRepository.find();
+    const usersWithoutPassword = users.map((user) => {
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    });
+    return usersWithoutPassword;
   }
 
   async findOne(id: number): Promise<User> {
@@ -57,6 +62,7 @@ export class UsersService {
     if (existingUser) throw new BadRequestException();
     const user = this.userRepository.create(signInDto);
     const AuthToken = await this.authService.generateToken(user);
+    user.authToken = AuthToken.access_token;
 
     this.userRepository.save(user);
     const { password, ...userWithoutPassword } = user;
@@ -69,7 +75,7 @@ export class UsersService {
     });
     if (!user) throw new NotFoundException('User not found');
     const AuthToken = await this.authService.generateToken(user);
-
+    user.authToken = AuthToken.access_token;
     this.userRepository.save(user);
     const { password, ...userWithoutPassword } = user;
 

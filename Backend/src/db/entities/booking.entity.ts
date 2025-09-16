@@ -22,7 +22,4 @@ export class Booking {
 
   @Column({ type: 'varchar', length: 20, default: 'pending' })
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
-
-  @Column({ nullable: true })
-  manager: string;
 }

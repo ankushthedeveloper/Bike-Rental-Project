@@ -8,11 +8,14 @@ import {
   Put,
   Delete,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateBookingDto } from '../dtos/create-booking.dto';
 import { BookingService } from '../services/bookings.service';
 import { BikesService } from '../services/bikes.service';
 import { UsersService } from '../services/users.service';
+import { AdminRoleGuard } from 'src/app/gaurds/adminGaurd';
+import { AuthGuard } from 'src/app/gaurds/auth.gaurd';
 
 @Controller('booking')
 export class BookingsController {
@@ -22,6 +25,7 @@ export class BookingsController {
     private readonly userService: UsersService,
   ) {}
 
+  @UseGuards(AuthGuard, AdminRoleGuard)
   @Get()
   async findAll() {
     return this.bookingService.findAll();
@@ -31,6 +35,7 @@ export class BookingsController {
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.bookingService.findOne(id);
   }
+
   @Get('user/:userId')
   async getBookingsByUserId(@Param('userId') userId: string) {
     const bookings = await this.bookingService.getBookingsByUserId(userId);
@@ -61,6 +66,7 @@ export class BookingsController {
     return this.bookingService.create(body);
   }
 
+  @UseGuards(AuthGuard, AdminRoleGuard)
   @Put(':id')
   async updateBooking(
     @Param('id', ParseIntPipe) id: number,
@@ -69,6 +75,7 @@ export class BookingsController {
     return this.bookingService.update(id, updateBookingDto);
   }
 
+  @UseGuards(AuthGuard, AdminRoleGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.bookingService.remove(id);

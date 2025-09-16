@@ -23,5 +23,8 @@ export class User {
   created_at: Date;
 
   @Column({ type: 'varchar', length: 20, default: 'user' })
-  role: 'user' | 'admin' | 'manager';
+  role: 'user' | 'admin';
+
+  @Column({ type: 'varchar', length: 30000, nullable: true, default: null })
+  authToken: string | null;
 }

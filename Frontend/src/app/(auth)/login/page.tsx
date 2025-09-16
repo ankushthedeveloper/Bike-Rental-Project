@@ -24,7 +24,6 @@ export default function SignUp() {
     setLoading(true);
     setMessage("");
     try {
-      // Replace with your API endpoint
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/users/logIn`,
         {
@@ -38,7 +37,8 @@ export default function SignUp() {
         const data = await res.json();
         dispatch(setUser(data.user));
         setForm({ email: "", password: "" });
-        router.push("/");
+        if (data.user.role === "admin") router.push("/admin/dashboard");
+        else router.push("/");
         router.refresh();
       } else {
         const data = await res.json();
@@ -51,8 +51,8 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center pt-12 px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center px-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 mt-30">
         <h1 className="text-3xl font-bold text-blue-600 mb-6 text-center">
           Log In to Your Bikely Account
         </h1>

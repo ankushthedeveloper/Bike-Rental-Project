@@ -7,4 +7,5 @@ export interface Bike {
   created_at: string;
   distanceTraveled: number;
   images: string[];
+  rentPerDay: number;
 }

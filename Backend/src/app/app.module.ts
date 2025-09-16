@@ -6,6 +6,9 @@ import { Bike } from 'src/db/entities/bike.entity';
 import { User } from 'src/db/entities/user.entity';
 import { apiModule } from './api/api.module';
 import { Booking } from 'src/db/entities/booking.entity';
+import { JwtModule } from '@nestjs/jwt';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Module({
   imports: [

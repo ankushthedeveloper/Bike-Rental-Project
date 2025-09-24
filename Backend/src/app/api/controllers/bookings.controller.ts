@@ -36,23 +36,7 @@ export class BookingsController {
     return this.bookingService.findOne(id);
   }
 
-  @Get('user/:userId')
-  async getBookingsByUserId(@Param('userId') userId: string) {
-    const bookings = await this.bookingService.getBookingsByUserId(userId);
-    const updatedBookings = await Promise.all(
-      bookings.map(async (booking) => {
-        const bikeDetails = await this.bikeService.findOne(
-          Number(booking.bikeId),
-        );
-        return {
-          ...booking,
-          bikeDetails,
-        };
-      }),
-    );
-    return updatedBookings;
-  }
-
+  @UseGuards(AuthGuard)
   @Post('create')
   async createBooking(@Body() body: CreateBookingDto) {
     if (!body.bikeId || !body.userId || !body.startDate || !body.endDate) {
@@ -79,5 +63,46 @@ export class BookingsController {
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.bookingService.remove(id);
+  }
+  @UseGuards(AuthGuard, AdminRoleGuard)
+  @Put('complete/:id')
+  async markBookingAsCompleted(@Param('id', ParseIntPipe) id: number) {
+    return this.bookingService.markBookingAsCompleted(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('active/user/:userId')
+  async getActiveBookings(@Param('userId') userId: string) {
+    const bookings = await this.bookingService.getActiveBookings({ userId });
+    const updatedBookings = await Promise.all(
+      bookings.map(async (booking) => {
+        const bikeDetails = await this.bikeService.findOne(
+          Number(booking.bikeId),
+        );
+        return {
+          ...booking,
+          bikeDetails,
+        };
+      }),
+    );
+    return updatedBookings;
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('completed/user/:userId')
+  async getCompletedBookings(@Param('userId') userId: string) {
+    const bookings = await this.bookingService.getCompletedBookings({ userId });
+    const updatedBookings = await Promise.all(
+      bookings.map(async (booking) => {
+        const bikeDetails = await this.bikeService.findOne(
+          Number(booking.bikeId),
+        );
+        return {
+          ...booking,
+          bikeDetails,
+        };
+      }),
+    );
+    return updatedBookings;
   }
 }

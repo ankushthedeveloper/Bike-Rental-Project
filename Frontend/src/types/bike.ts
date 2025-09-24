@@ -1,11 +1,12 @@
-export interface Bike {
+export type Bike = {
   id: number;
   brand: string;
   model: string;
   year: number;
-  price: number;
+  rentPerDay: number;
   created_at: string;
   distanceTraveled: number;
   images: string[];
-  rentPerDay: number;
-}
+  noOfBikes: number;
+  location: string;
+};

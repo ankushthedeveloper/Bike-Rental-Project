@@ -2,8 +2,9 @@ import { AxiosError } from "axios";
 
 import { ServiceResponse } from "@/types/response";
 import instance from "@/config";
+import store from "@/store";
+import { clearUser } from "@/lib/states/auth.slice";
 
-// TODO:remove temp url
 export const getService = async (
   url: string,
   params?: Record<string, unknown>,
@@ -16,7 +17,7 @@ export const getService = async (
       headers: { Accept: "application/json", ...headers },
       signal,
     });
-    console.log("getService response final:", response);
+
     return {
       statusCode: response?.data?.status || 200,
       data: response?.data,

@@ -20,6 +20,6 @@ export class Booking {
   @Column({ nullable: true })
   totalPrice: number;
 
-  @Column({ type: 'varchar', length: 20, default: 'pending' })
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  @Column({ type: 'varchar', length: 20, default: 'active' })
+  status: 'active' | 'completed';
 }

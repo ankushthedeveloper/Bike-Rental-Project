@@ -15,8 +15,8 @@ import { Booking } from 'src/db/entities/booking.entity';
 @Module({
   imports: [
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'your_jwt_secret',
-      signOptions: { expiresIn: '1h' },
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '15d' },
     }),
     TypeOrmModule.forFeature([User, Bike, Booking]),
   ],

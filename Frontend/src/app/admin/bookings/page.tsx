@@ -10,40 +10,26 @@ import {
   ClipboardX,
   RefreshCw,
 } from "lucide-react";
+import { MdDone } from "react-icons/md";
+import { markBookingAsCompleted } from "@/services/admin/bookings";
+import { toast } from "react-toastify";
+import { deleteBooking, getAllBookings } from "@/services/admin/bookings";
+import { Booking, BookingStatus } from "@/types/booking";
 
-// --- Type Definitions ---
-type BookingStatus = "Confirmed" | "Pending" | "Cancelled";
-
-type Booking = {
-  id: number;
-  bikeId: number; // In a real app, you'd populate this to show bike details
-  userId: number; // Same for user details
-  startDate: string;
-  endDate: string;
-  totalPrice: number;
-  status: BookingStatus;
-  manager?: string;
-};
-
-// --- Child Components ---
-
-// A badge for displaying the booking status visually
 const StatusBadge = ({ status }: { status: BookingStatus }) => {
-  const statusStyles = {
-    Confirmed: {
-      icon: <CheckCircle size={14} />,
+  const statusStyles: Record<
+    BookingStatus,
+    { bgColor: string; textColor: string; icon: React.ReactNode }
+  > = {
+    active: {
       bgColor: "bg-green-100",
       textColor: "text-green-800",
-    },
-    Pending: {
       icon: <Clock size={14} />,
-      bgColor: "bg-yellow-100",
-      textColor: "text-yellow-800",
     },
-    Cancelled: {
-      icon: <XCircle size={14} />,
-      bgColor: "bg-red-100",
-      textColor: "text-red-800",
+    completed: {
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-800",
+      icon: <CheckCircle size={14} />,
     },
   };
 
@@ -59,7 +45,6 @@ const StatusBadge = ({ status }: { status: BookingStatus }) => {
   );
 };
 
-// A skeleton loader that mimics the table structure
 const BookingTableSkeleton = () => (
   <div className="overflow-x-auto">
     <table className="min-w-full bg-white">
@@ -85,25 +70,20 @@ const BookingTableSkeleton = () => (
   </div>
 );
 
-// --- Main Page Component ---
-
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // State for the confirmation modal
   const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
+  const [bookingToComplete, setBookingToComplete] = useState<Booking | null>(
+    null
+  );
 
   const fetchBookings = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("http://localhost:3001/booking", {
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed to fetch bookings.");
-      const data = await res.json();
+      const data = await getAllBookings();
       setBookings(data);
     } catch (err) {
       setError(
@@ -118,18 +98,30 @@ export default function BookingsPage() {
     fetchBookings();
   }, [fetchBookings]);
 
+  const handleCompleteBooking = async () => {
+    if (!bookingToComplete) return;
+    try {
+      const response = await markBookingAsCompleted(bookingToComplete.id);
+      const updatedBooking: Booking =
+        response && response.data && response.data.id
+          ? response.data
+          : response;
+      setBookings((prev) =>
+        prev.map((b) => (b.id === updatedBooking.id ? updatedBooking : b))
+      );
+      setBookingToComplete(null);
+      toast.success("Booking marked as completed.");
+    } catch (error) {
+      toast.error("Failed to mark booking as completed.");
+    }
+  };
+
   const handleDeleteBooking = async () => {
     if (!bookingToDelete) return;
 
     try {
-      const res = await fetch(
-        `http://localhost:3001/booking/${bookingToDelete.id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
-      if (!res.ok) throw new Error("Failed to delete booking.");
+      const res = await deleteBooking(bookingToDelete.id);
+      if (res.status !== 200) throw new Error("Failed to delete booking.");
 
       setBookings((prev) => prev.filter((b) => b.id !== bookingToDelete.id));
       setBookingToDelete(null); // Close modal on success
@@ -204,7 +196,7 @@ export default function BookingsPage() {
                   </div>
                 </td>
                 <td className="py-3 px-4 font-semibold">
-                  ₹{booking.totalPrice}
+                  ₹{booking.totalPrice?.toFixed(2)}
                 </td>
                 <td className="py-3 px-4">
                   <StatusBadge status={booking.status} />
@@ -220,6 +212,15 @@ export default function BookingsPage() {
                   >
                     <Trash2 size={18} />
                   </button>
+                  {booking.status === "active" && (
+                    <button
+                      onClick={() => setBookingToComplete(booking)}
+                      className="p-2 text-slate-500 hover:text-green-600 hover:bg-green-100 rounded-full transition-colors"
+                      aria-label="Complete booking"
+                    >
+                      <MdDone size={18} />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -245,7 +246,6 @@ export default function BookingsPage() {
 
       {renderContent()}
 
-      {/* --- Confirmation Modal --- */}
       {bookingToDelete && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-sm">
@@ -278,6 +278,40 @@ export default function BookingsPage() {
                 className="inline-flex justify-center w-full rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700"
               >
                 Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {bookingToComplete && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-sm">
+            <div className="text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                <MdDone className="h-6 w-6 text-green-600" aria-hidden="true" />
+              </div>
+              <h3 className="mt-3 text-lg font-semibold text-slate-900">
+                Complete Booking
+              </h3>
+              <p className="mt-2 text-sm text-slate-500">
+                Are you sure you want to mark booking #{bookingToComplete.id} as
+                completed ? This action cannot be undone.
+              </p>
+            </div>
+            <div className="mt-5 sm:mt-6 grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setBookingToComplete(null)}
+                className="inline-flex justify-center w-full rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleCompleteBooking}
+                className="inline-flex justify-center w-full rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700"
+              >
+                Confirm Complete
               </button>
             </div>
           </div>

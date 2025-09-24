@@ -23,7 +23,6 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-// --- Type Definitions (assuming these are in a central file) ---
 type User = { id: number; name: string; email: string; created_at: string };
 type Bike = { id: number; brand: string; model: string; images: string[] };
 type Booking = {
@@ -34,9 +33,6 @@ type Booking = {
   totalPrice: number;
 };
 
-// --- Child Components for the Dashboard ---
-
-// A single Key Performance Indicator (KPI) card
 const StatCard = ({ title, value, growth, icon: Icon, color }: any) => (
   <div className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between">
     <div className="flex justify-between items-center">
@@ -54,7 +50,6 @@ const StatCard = ({ title, value, growth, icon: Icon, color }: any) => (
   </div>
 );
 
-// A skeleton loader that mimics the dashboard layout
 const DashboardSkeleton = () => (
   <div className="animate-pulse">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -70,8 +65,6 @@ const DashboardSkeleton = () => (
     </div>
   </div>
 );
-
-// --- Main Dashboard Component ---
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([]);
@@ -97,11 +90,9 @@ export default function AdminDashboard() {
         const usersData = await usersRes.json();
         const bikesData = await bikesRes.json();
         const bookingsData = await bookingsRes.json();
-
-        // Basic validation
-        setUsers(Array.isArray(usersData.data) ? usersData.data : []);
-        setBikes(Array.isArray(bikesData.data) ? bikesData.data : []);
-        setBookings(Array.isArray(bookingsData) ? bookingsData : []);
+        setUsers(usersData || []);
+        setBikes(bikesData || []);
+        setBookings(bookingsData || []);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred."
@@ -114,14 +105,11 @@ export default function AdminDashboard() {
     fetchData();
   }, [baseURL]);
 
-  // --- Memoized Data Processing for Charts & Stats ---
-
   const processedData = useMemo(() => {
     const today = new Date();
     const weekAgo = new Date(today);
     weekAgo.setDate(today.getDate() - 7);
 
-    // KPI stats
     const newUsersLast7Days = users.filter(
       (u) => new Date(u.created_at) >= weekAgo
     ).length;
@@ -130,7 +118,6 @@ export default function AdminDashboard() {
     ).length;
     const totalRevenue = bookings.reduce((sum, b) => sum + b.totalPrice, 0);
 
-    // Bookings over time (last 30 days)
     const bookingsByDate: { [key: string]: number } = {};
     for (let i = 29; i >= 0; i--) {
       const d = new Date();
@@ -153,15 +140,15 @@ export default function AdminDashboard() {
       })
     );
 
-    // Popular bikes
     const bikePopularity: { [key: string]: number } = {};
     bookings.forEach((b) => {
-      const bike = bikes.find((bike) => bike.id === b.bikeId);
+      const bike = bikes.find((bike) => bike.id == b.bikeId);
       if (bike) {
         const name = `${bike.brand} ${bike.model}`;
         bikePopularity[name] = (bikePopularity[name] || 0) + 1;
       }
     });
+    console.log({ bikePopularity });
     const popularBikesChartData = Object.entries(bikePopularity)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
@@ -246,7 +233,6 @@ export default function AdminDashboard() {
         />
       </div>
 
-      {/* --- Bookings Chart --- */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
         <h3 className="text-lg font-semibold text-slate-800 mb-4">
           Bookings (Last 30 Days)
@@ -274,7 +260,6 @@ export default function AdminDashboard() {
         </ResponsiveContainer>
       </div>
 
-      {/* --- Recent Activity & Popular Bikes --- */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white rounded-xl shadow-md p-6">
           <h3 className="text-lg font-semibold text-slate-800 mb-4">
@@ -311,7 +296,7 @@ export default function AdminDashboard() {
               return (
                 <li key={booking.id} className="flex items-center gap-4">
                   <img
-                    src={bike?.images[0] || "/placeholder-bike.jpg"}
+                    src={bike?.images[0] || "/bike.png"}
                     alt={bike?.model}
                     className="w-12 h-12 object-cover rounded-lg"
                   />

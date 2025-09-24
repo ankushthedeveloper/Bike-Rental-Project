@@ -64,7 +64,7 @@ export class UsersController {
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    return user;
+    return { user, message: 'Sign up successful', status: 201 };
   }
 
   @Post('logIn')

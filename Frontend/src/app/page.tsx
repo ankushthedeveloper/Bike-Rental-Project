@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import {
   Search,
@@ -8,8 +9,14 @@ import {
   Zap,
   Leaf,
 } from "lucide-react";
+import BikeCard from "@/components/Cards/BikeCard";
+import { bikes } from "@/assets/data";
+import { toast } from "react-toastify";
 
 export default function Home() {
+  const handleClickApp = () => {
+    toast.info("App will be available soon! , Thanks for your patience.");
+  };
   return (
     <div className="bg-slate-50 text-slate-800 font-sans">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm shadow-sm"></header>
@@ -54,8 +61,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        {/* How It Works Section */}
         <section id="how-it-works" className="py-20">
           <div className="container mx-auto text-center px-4">
             <h2 className="text-3xl font-bold mb-4">
@@ -153,7 +158,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Featured Bikes Section */}
         <section id="bikes" className="py-20">
           <div className="container mx-auto text-center px-4">
             <h2 className="text-3xl font-bold mb-4">Explore Our Fleet</h2>
@@ -162,111 +166,13 @@ export default function Home() {
               perfect ride for any adventure.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {/* Bike Card 1 */}
-              <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
-                <Image
-                  src="/city-cruiser.jpg"
-                  alt="City Cruiser"
-                  width={400}
-                  height={300}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4 text-left">
-                  <h3 className="font-bold text-lg">City Cruiser</h3>
-                  <p className="text-slate-500 text-sm">
-                    Perfect for leisurely rides.
-                  </p>
-                  <div className="mt-4 flex justify-between items-center">
-                    <span className="font-bold text-blue-600">$5 / hour</span>
-                    <a
-                      href="#"
-                      className="text-sm font-semibold text-blue-600 hover:underline"
-                    >
-                      Rent Now
-                    </a>
-                  </div>
-                </div>
-              </div>
-              {/* Bike Card 2 */}
-              <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
-                <Image
-                  src="/mountain-bike.jpg"
-                  alt="Mountain Bike"
-                  width={400}
-                  height={300}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4 text-left">
-                  <h3 className="font-bold text-lg">Mountain Pro</h3>
-                  <p className="text-slate-500 text-sm">
-                    For the adventurous trails.
-                  </p>
-                  <div className="mt-4 flex justify-between items-center">
-                    <span className="font-bold text-blue-600">$8 / hour</span>
-                    <a
-                      href="#"
-                      className="text-sm font-semibold text-blue-600 hover:underline"
-                    >
-                      Rent Now
-                    </a>
-                  </div>
-                </div>
-              </div>
-              {/* Bike Card 3 */}
-              <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
-                <Image
-                  src="/electric-bike.jpg"
-                  alt="Electric Bike"
-                  width={400}
-                  height={300}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4 text-left">
-                  <h3 className="font-bold text-lg">E-Bike Bolt</h3>
-                  <p className="text-slate-500 text-sm">
-                    Get there faster, with less effort.
-                  </p>
-                  <div className="mt-4 flex justify-between items-center">
-                    <span className="font-bold text-blue-600">$10 / hour</span>
-                    <a
-                      href="#"
-                      className="text-sm font-semibold text-blue-600 hover:underline"
-                    >
-                      Rent Now
-                    </a>
-                  </div>
-                </div>
-              </div>
-              {/* Bike Card 4 */}
-              <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
-                <Image
-                  src="/road-bike.jpg"
-                  alt="Road Bike"
-                  width={400}
-                  height={300}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4 text-left">
-                  <h3 className="font-bold text-lg">Road Racer</h3>
-                  <p className="text-slate-500 text-sm">
-                    Built for speed and performance.
-                  </p>
-                  <div className="mt-4 flex justify-between items-center">
-                    <span className="font-bold text-blue-600">$9 / hour</span>
-                    <a
-                      href="#"
-                      className="text-sm font-semibold text-blue-600 hover:underline"
-                    >
-                      Rent Now
-                    </a>
-                  </div>
-                </div>
-              </div>
+              {bikes.map((bike) => (
+                <BikeCard key={bike.name} bike={bike} />
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Testimonials Section */}
         <section id="testimonials" className="py-20 bg-blue-50">
           <div className="container mx-auto text-center px-4">
             <h2 className="text-3xl font-bold mb-12">
@@ -286,7 +192,7 @@ export default function Home() {
                 </p>
                 <div className="flex items-center gap-4">
                   <Image
-                    src="/avatar-1.jpg"
+                    src="/user1.jpg"
                     alt="User Avatar"
                     width={40}
                     height={40}
@@ -310,7 +216,7 @@ export default function Home() {
                 </p>
                 <div className="flex items-center gap-4">
                   <Image
-                    src="/avatar-2.jpg"
+                    src="/user2.jpg"
                     alt="User Avatar"
                     width={40}
                     height={40}
@@ -335,7 +241,7 @@ export default function Home() {
                 </p>
                 <div className="flex items-center gap-4">
                   <Image
-                    src="/avatar-3.jpg"
+                    src="/user3.avif"
                     alt="User Avatar"
                     width={40}
                     height={40}
@@ -364,12 +270,14 @@ export default function Home() {
                 <a
                   href="#"
                   className="bg-white text-blue-600 px-8 py-3 rounded-full font-bold shadow-lg hover:bg-slate-100 transition-transform hover:scale-105 transform"
+                  onClick={handleClickApp}
                 >
                   Download for iOS
                 </a>
                 <a
                   href="#"
                   className="border-2 border-white text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-white hover:text-blue-600 transition-all hover:scale-105 transform"
+                  onClick={handleClickApp}
                 >
                   Download for Android
                 </a>

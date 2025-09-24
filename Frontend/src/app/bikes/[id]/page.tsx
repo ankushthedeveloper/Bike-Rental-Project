@@ -3,11 +3,11 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "@/store";
 import { getBikeById } from "@/services/bikes";
 import { bookingService } from "@/services/bookings";
-import { BikeDetailSkeleton } from "@/components/bikes/BikeDetailSkelton"; // Import the skeleton
+import { BikeDetailSkeleton } from "@/components/bikes/BikeDetailSkelton";
 import {
   ChevronLeft,
   ChevronRight,
@@ -19,23 +19,10 @@ import {
   CheckCircle2,
   Loader2,
 } from "lucide-react";
-
-// Using a more specific type for the Bike
-type Bike = {
-  id: number;
-  brand: string;
-  model: string;
-  year: number;
-  rentPerDay: number;
-  created_at: string;
-  distanceTraveled: number;
-  images: string[];
-  noOfBikes: number;
-  location: string;
-};
-interface User {
-  id?: string;
-}
+import { clearUser, setUser } from "@/lib/states/auth.slice";
+import { toast } from "react-toastify";
+import { User } from "@/types/user";
+import { Bike } from "@/types/bike";
 
 export default function BikeDetailPage() {
   const { id } = useParams();
@@ -55,6 +42,7 @@ export default function BikeDetailPage() {
   type BookingStatus = "idle" | "loading" | "success" | "error";
   const [bookingStatus, setBookingStatus] = useState<BookingStatus>("idle");
   const [bookingMessage, setBookingMessage] = useState("");
+  const dispatch = useDispatch();
 
   const fetchBike = useCallback(async () => {
     if (!id) return;
@@ -90,17 +78,21 @@ export default function BikeDetailPage() {
     setBookingMessage("");
 
     try {
+      console.log(user);
       const data = { bikeId: bike?.id, userId: user?.id, startDate, endDate };
       const res = await bookingService(data);
 
       if (res.statusCode === 201) {
         setBookingStatus("success");
         setBookingMessage("Booking confirmed! Redirecting...");
-        // Redirect AFTER showing success message
         setTimeout(() => {
           setModalOpen(false);
           router.push("/my-bookings");
         }, 2000);
+      } else if (res.statusCode === 401) {
+        dispatch(clearUser());
+        router.push("/login");
+        toast.error("Session expired. Please log in again.");
       } else {
         throw new Error(res.message || "Booking failed.");
       }
@@ -287,7 +279,7 @@ export default function BikeDetailPage() {
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
                       min={new Date().toISOString().split("T")[0]}
-                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                     />
                   </div>
                   <div>
@@ -299,7 +291,7 @@ export default function BikeDetailPage() {
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
                       min={startDate || new Date().toISOString().split("T")[0]}
-                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                     />
                   </div>
                 </div>

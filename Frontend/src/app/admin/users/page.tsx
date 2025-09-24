@@ -14,20 +14,9 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { User, UserRole } from "@/types/user";
+import UserTableSkeleton from "@/components/Skeletons/UsersTableSkeleton";
 
-// --- Type Definitions ---
-type UserRole = "user" | "admin" | "manager";
-type User = {
-  id: number;
-  name: string;
-  email: string;
-  created_at: string;
-  role: UserRole;
-};
-
-// --- Child Components ---
-
-// A visually distinct badge for each user role
 const RoleBadge = ({ role }: { role: UserRole }) => {
   const roleStyles = {
     admin: {
@@ -56,43 +45,6 @@ const RoleBadge = ({ role }: { role: UserRole }) => {
     </span>
   );
 };
-
-// A skeleton loader that mimics the final table layout
-const UserTableSkeleton = () => (
-  <div className="overflow-x-auto">
-    <table className="min-w-full bg-white">
-      <thead className="bg-slate-100">
-        <tr>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <th key={i} className="py-3 px-4 text-left"></th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {Array.from({ length: 7 }).map((_, index) => (
-          <tr key={index} className="border-b">
-            <td className="py-4 px-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-200 rounded-full animate-pulse"></div>
-                <div>
-                  <div className="h-4 w-24 bg-slate-200 rounded animate-pulse mb-1"></div>
-                  <div className="h-3 w-32 bg-slate-200 rounded animate-pulse"></div>
-                </div>
-              </div>
-            </td>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <td key={i} className="py-4 px-4">
-                <div className="h-4 w-20 bg-slate-200 rounded animate-pulse"></div>
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
-
-// --- Main Page Component ---
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -129,16 +81,10 @@ export default function UsersPage() {
 
   const handleDeleteUser = async () => {
     if (!userToDelete) return;
-    // In a real app, you'd show a loading state on the modal button
     try {
-      // Assuming you have a deleteUserService that takes a user ID
-      // const res = await deleteUserService(userToDelete.id);
-      // if (res.statusCode !== 200) throw new Error(res.message);
-
-      // For demonstration, we'll just filter the UI state
       setUsers((prev) => prev.filter((user) => user.id !== userToDelete.id));
       toast.success(`User "${userToDelete.name}" deleted successfully.`);
-      setUserToDelete(null); // Close the modal
+      setUserToDelete(null);
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to delete user."
@@ -253,7 +199,6 @@ export default function UsersPage() {
 
       {renderContent()}
 
-      {/* --- Confirmation Modal for Deletion --- */}
       {userToDelete && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-sm">

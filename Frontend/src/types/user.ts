@@ -1,7 +1,9 @@
-export interface User {
-  id: string;
+export type UserRole = "user" | "admin" | "manager";
+export type User = {
+  id: number;
   name: string;
-  role: string;
   email: string;
-  authToken: string;
-}
+  created_at: string;
+  role: UserRole;
+  authToken?: string;
+};

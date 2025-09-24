@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   CheckCircle2,
 } from "lucide-react";
+import { createBike, updateBike } from "@/services/admin/bikes";
 
 type BikeFormState = {
   brand: string;
@@ -168,19 +169,15 @@ export default function AddBikeForm({
         formData.append("removedImages", imgUrl)
       );
     }
-    const url = isEditing
-      ? `http://localhost:3001/bikes/${bikeToEdit?.id}`
-      : "http://localhost:3001/bikes";
-    const method = isEditing ? "PUT" : "POST";
 
     try {
-      const res = await fetch(url, {
-        method: method,
-        body: formData,
-        credentials: "include",
-      });
+      const res = isEditing
+        ? await updateBike(bikeToEdit._id, formData)
+        : await createBike(formData);
 
-      if (res.ok) {
+      console.log({ res });
+
+      if (res) {
         setStatus({
           loading: false,
           message: `Bike ${isEditing ? "updated" : "added"} successfully!`,
@@ -191,10 +188,10 @@ export default function AddBikeForm({
           onClose();
         }, 1500);
       } else {
-        const data = await res.json();
-        throw new Error(
-          data.message || `Failed to ${isEditing ? "update" : "add"} bike.`
-        );
+        // const data = await res.json();
+        // throw new Error(
+        //   data.message || `Failed to ${isEditing ? "update" : "add"} bike.`
+        // );
       }
     } catch (err) {
       setStatus({

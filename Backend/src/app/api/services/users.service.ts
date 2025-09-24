@@ -54,18 +54,21 @@ export class UsersService {
   }
 
   async signUp(
-    signInDto: SignUpDto,
-  ): Promise<{ user: User; authToken: string }> {
+    signUpDto: SignUpDto,
+  ): Promise<{ user: Omit<User, 'authToken'>; authToken: string }> {
     const existingUser = await this.userRepository.findOne({
-      where: { email: signInDto.email },
+      where: { email: signUpDto.email },
     });
     if (existingUser) throw new BadRequestException();
-    const user = this.userRepository.create(signInDto);
-    const AuthToken = await this.authService.generateToken(user);
-    user.authToken = AuthToken.access_token;
 
-    this.userRepository.save(user);
-    const { password, ...userWithoutPassword } = user;
+    const user = this.userRepository.create(signUpDto);
+    const savedUser = await this.userRepository.save(user);
+    const AuthToken = await this.authService.generateToken(savedUser);
+    savedUser.authToken = AuthToken.access_token;
+    await this.userRepository.save(savedUser);
+    console.log({ savedUser });
+
+    const { password, authToken, ...userWithoutPassword } = savedUser;
     return { user: userWithoutPassword, authToken: AuthToken.access_token };
   }
 
